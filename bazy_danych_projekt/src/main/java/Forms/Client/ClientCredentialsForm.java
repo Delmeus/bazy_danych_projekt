@@ -33,6 +33,13 @@ public class ClientCredentialsForm extends JFrame implements ActionListener {
         acceptButton.addActionListener(this);
         quitButton.addActionListener(this);
 
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                parent.setVisible(true);
+            }
+        });
+
         setContentPane(mainPanel);
         setVisible(true);
         pack();

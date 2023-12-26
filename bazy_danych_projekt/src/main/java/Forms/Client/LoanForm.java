@@ -21,6 +21,13 @@ public class LoanForm extends JFrame implements ActionListener {
         performButton.addActionListener(this);
         quitButton.addActionListener(this);
 
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                parent.setVisible(true);
+            }
+        });
+
         setContentPane(mainPanel);
         setVisible(true);
         pack();

@@ -62,8 +62,6 @@ public class Client extends JFrame implements ActionListener {
         balanceFillLabel.setText(String.valueOf(balance));
         accountFillLabel.setText(accountNumber);
 
-        //transferFrame = new JFrame();
-
         setVisible(true);
         pack();
     }
@@ -73,7 +71,6 @@ public class Client extends JFrame implements ActionListener {
         if(e.getSource() == changeAccountDetailsButton){
             setVisible(false);
             new ClientCredentialsForm(this);
-            nameFillLabel.setText(firstName + " " + lastName);
         }
         else if(e.getSource() == transferMoneyButton){
             setVisible(false);
@@ -96,7 +93,7 @@ public class Client extends JFrame implements ActionListener {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connection.prepareStatement("UPDATE clients SET first_name = ?, last_name = ?, address = ?, city = ? WHERE id = ?");
-            System.out.println(firstName);
+
             preparedStatement.setString(1, firstName);
             preparedStatement.setString(2, lastName);
             preparedStatement.setString(3, address);
@@ -113,6 +110,8 @@ public class Client extends JFrame implements ActionListener {
         this.lastName = lastName;
         this.address = address;
         this.city = city;
+
+        nameFillLabel.setText(firstName + " " + lastName);
 
     }
 
