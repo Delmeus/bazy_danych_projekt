@@ -12,7 +12,7 @@ public class Application {
         Statement statement = null;
         if(args[3].equals("C")) {
             try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
+                //Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
                 statement = connection.createStatement();
 

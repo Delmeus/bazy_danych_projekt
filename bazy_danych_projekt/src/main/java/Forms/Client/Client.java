@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
 
 public class Client extends JFrame implements ActionListener {
     private JButton manageCardsButton;
@@ -21,11 +22,6 @@ public class Client extends JFrame implements ActionListener {
     private JLabel titleLabel;
 
 
-    private CardLayout cardLayout;
-    private JPanel cardPanel;
-
-
-
     private String firstName;
     private String lastName;
     private String address;
@@ -34,8 +30,16 @@ public class Client extends JFrame implements ActionListener {
     private final String accountNumber;
     private double balance;
 
+    private Connection connection = null;
 
     public Client(int id, String firstName, String lastName, String address, String city, Double balance, String accountNumber) {
+
+        try{
+            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -69,6 +73,7 @@ public class Client extends JFrame implements ActionListener {
         if(e.getSource() == changeAccountDetailsButton){
             setVisible(false);
             new ClientCredentialsForm(this);
+            nameFillLabel.setText(firstName + " " + lastName);
         }
         else if(e.getSource() == transferMoneyButton){
             setVisible(false);
@@ -82,6 +87,32 @@ public class Client extends JFrame implements ActionListener {
             setVisible(false);
             new CreditCardsForm(this);
         }
+
+    }
+
+    protected void updateCredentials(String firstName, String lastName, String address, String city){
+        // TODO check if given strings are logical (e.g return if firstName contains a digit)
+
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement("UPDATE clients SET first_name = ?, last_name = ?, address = ?, city = ? WHERE id = ?");
+            System.out.println(firstName);
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(3, address);
+            preparedStatement.setString(4, city);
+            preparedStatement.setInt(5, this.id);
+
+            preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            System.out.println(e);
+            return;
+        }
+
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.address = address;
+        this.city = city;
 
     }
 

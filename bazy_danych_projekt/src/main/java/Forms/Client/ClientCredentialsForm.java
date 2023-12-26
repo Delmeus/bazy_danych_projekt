@@ -45,7 +45,7 @@ public class ClientCredentialsForm extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == acceptButton){
-
+            parent.updateCredentials(firstNameField.getText(), lastNameField.getText(), addressField.getText(), cityTextField.getText());
             dispose();
             parent.setVisible(true);
         }
