@@ -2,6 +2,25 @@
 -- Widok do sprawdzania stanu konta
 --
 
+CREATE VIEW clients_info_view AS
+SELECT
+	clients.id AS "ID",
+    clients.first_name AS "Imię",
+    clients.last_name AS "Nazwisko",
+    clients.address AS "Adres",
+    clients.city AS "Miasto",
+    accounts.balance AS "Saldo",
+    accounts.account_number AS "Numer konta"
+FROM 
+	clients
+JOIN
+	accounts ON accounts.client_id = clients.id
+GROUP BY
+	clients.id, accounts.account_number;
+    
+SELECT * FROM clients_info_view;
+    
+
 CREATE VIEW check_balance_view AS 
 SELECT
 	CONCAT(clients.first_name, ' ', clients.last_name) AS "Imie i nazwisko",
@@ -110,6 +129,7 @@ CREATE INDEX account_number_index ON accounts(account_number);
 --
 -- Usuniecie widokow
 --
+
 
 DROP VIEW departments_view;
 DROP VIEW transactions_view;
