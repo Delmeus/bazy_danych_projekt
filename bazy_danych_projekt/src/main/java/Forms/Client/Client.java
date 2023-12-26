@@ -31,16 +31,18 @@ public class Client extends JFrame implements ActionListener {
     private String address;
     private String city;
     private final int id;
-//    private final String accountNumber;
-//    private double balance;
+    private final String accountNumber;
+    private double balance;
 
 
-    public Client(int id, String firstName, String lastName, String address, String city) {
+    public Client(int id, String firstName, String lastName, String address, String city, Double balance, String accountNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.city = city;
         this.id = id;
+        this.balance = balance;
+        this.accountNumber = accountNumber;
         setTitle("Aplikacja Klienta");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,8 +55,8 @@ public class Client extends JFrame implements ActionListener {
         loanButton.addActionListener(this);
 
         nameFillLabel.setText(firstName + " " + lastName);
-        balanceFillLabel.setText("?");
-        accountFillLabel.setText("?");
+        balanceFillLabel.setText(String.valueOf(balance));
+        accountFillLabel.setText(accountNumber);
 
         //transferFrame = new JFrame();
 

@@ -17,6 +17,9 @@ public class ClientCredentialsForm extends JFrame implements ActionListener {
     private JLabel cardsLabel;
     private JList cardList;
     private JLabel titleLabel;
+    private JTextField cityTextField;
+    private JButton quitButton;
+    private JLabel cityLabel;
 
 
     private final Client parent;
@@ -24,9 +27,11 @@ public class ClientCredentialsForm extends JFrame implements ActionListener {
         parent = client;
         firstNameField.setText(client.getFirstName());
         lastNameField.setText(client.getLastName());
-        addressField.setText(client.getAddress() + ", " + client.getCity());
+        addressField.setText(client.getAddress());
+        cityTextField.setText(client.getCity());
 
         acceptButton.addActionListener(this);
+        quitButton.addActionListener(this);
 
         setContentPane(mainPanel);
         setVisible(true);
@@ -40,10 +45,14 @@ public class ClientCredentialsForm extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == acceptButton){
+
+            dispose();
+            parent.setVisible(true);
+        }
+        if(e.getSource() == quitButton){
             dispose();
             parent.setVisible(true);
         }
     }
-
 
 }

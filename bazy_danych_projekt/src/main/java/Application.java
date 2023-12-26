@@ -1,40 +1,37 @@
 import Forms.Client.Client;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Application {
     public static void main(String[] args) {
-        //ResultSet set = null;
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "root");
-            Statement statement = connection.createStatement();
-            ResultSet set = statement.executeQuery("select * from clients");
-            set.next();
-            Client client = new Client(set.getInt(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5));
-            while(set.next()){
-                System.out.println(set.getInt(1)+ " " + set.getString(2) + " " + set.getString(3));
+        /*
+        parameters - id first_name last_name type_of_user (c - client, e - employee, a - admin)
+         */
+        ResultSet set = null;
+        Connection connection = null;
+        Statement statement = null;
+        if(args[3].equals("C")) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
+                statement = connection.createStatement();
+
+                PreparedStatement preparedStatement = connection.prepareStatement("select * from clients_info_view where id = ?");
+                preparedStatement.setInt(1, Integer.parseInt(args[0]));
+                set = preparedStatement.executeQuery();
+
+                if(set == null){
+                    System.out.println("No such client");
+                    return;
+                }
+
+                set.next();
+                new Client(set.getInt(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5), set.getDouble(6), set.getString(7));
+
+            } catch (Exception e) {
+                System.out.println(e);
             }
-
-
-            //set = resultSet;
         }
-        catch (Exception e){
-            System.out.println(e);
-        }
-//        JFrame frame = new JFrame("Aplikacja Klienta");
-//        try {
-//            Client client = new Client(set.getInt(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5));
-//        }
-//        catch (Exception e){
-//            System.out.println(e);
-//        }
-//        frame.setContentPane(clientMainForm.getjPanel());
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.pack();
-//        frame.setVisible(true);
     }
+
 }
