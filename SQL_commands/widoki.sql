@@ -1,7 +1,8 @@
---
--- Widok do sprawdzania stanu konta
---
 
+
+--
+-- Widok pokazujacy kompletne informacje o klientach
+--
 CREATE VIEW clients_info_view AS
 SELECT
 	clients.id AS "ID",
@@ -20,6 +21,9 @@ GROUP BY
     
 SELECT * FROM clients_info_view;
     
+--
+-- Widok do sprawdzania stanu konta
+--
 
 CREATE VIEW check_balance_view AS 
 SELECT

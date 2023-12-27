@@ -1,11 +1,13 @@
 package Forms.Client;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Client extends JFrame implements ActionListener {
     private JButton manageCardsButton;
@@ -21,6 +23,7 @@ public class Client extends JFrame implements ActionListener {
     private JLabel balanceFillLabel;
     private JLabel accountFillLabel;
     private JLabel titleLabel;
+    private JButton transactionsHistoryButton;
 
 
     private String firstName;
@@ -58,6 +61,7 @@ public class Client extends JFrame implements ActionListener {
         changeAccountDetailsButton.addActionListener(this);
         transferMoneyButton.addActionListener(this);
         loanButton.addActionListener(this);
+        transactionsHistoryButton.addActionListener(this);
 
         nameFillLabel.setText(firstName + " " + lastName);
         balanceFillLabel.setText(String.valueOf(balance));
@@ -84,6 +88,10 @@ public class Client extends JFrame implements ActionListener {
         else if(e.getSource() == manageCardsButton){
             setVisible(false);
             new CreditCardsForm(this);
+        }
+        else if(e.getSource() == transactionsHistoryButton){
+            setVisible(false);
+            new transactionsFrame(this);
         }
 
     }
@@ -117,7 +125,6 @@ public class Client extends JFrame implements ActionListener {
     }
 
     protected void deleteAccount(){
-        // TODO FIX SQL
         PreparedStatement deleteCards = null;
         PreparedStatement deleteAccount = null;
         PreparedStatement deleteClient = null;
@@ -156,5 +163,74 @@ public class Client extends JFrame implements ActionListener {
 
     public String getCity() {
         return city;
+    }
+
+    private class transactionsFrame extends JFrame implements ActionListener{
+        private final Client parent;
+        private final JButton quitButton;
+        private transactionsFrame(Client parent){
+            this.parent = parent;
+
+            JPanel jPanel = new JPanel(new GridLayout(3,1));
+            jPanel.setBackground(new Color(24, 26, 48));
+
+            Font font = new Font("Cooper Black", Font.BOLD | Font.ITALIC, 22);
+            JLabel label = new JLabel();
+            label.setFont(font);
+            label.setForeground(new Color(255,255,255));
+            label.setText("Bank Bilardzistów");
+            label.setHorizontalAlignment(JLabel.CENTER);
+            jPanel.add(label);
+
+            setTitle("Historia transakcji");
+            setContentPane(jPanel);
+
+            quitButton = new JButton();
+            quitButton.setText("Powrót");
+            quitButton.addActionListener(this);
+
+            ArrayList<Object[]> dataList = new ArrayList<>();
+
+            try{
+                PreparedStatement preparedStatement = Client.this.connection.prepareStatement("SELECT `Rodzaj transakcji`, Kwota FROM transactions_view WHERE `Numer konta` = ?");
+                preparedStatement.setString(1, Client.this.accountNumber);
+                ResultSet set = preparedStatement.executeQuery();
+                while(set.next()){
+                    Object[] row = new Object[]{set.getString(1), set.getDouble(2)};
+                    dataList.add(row);
+                }
+                Object[][] data = new Object[dataList.size()][];
+                dataList.toArray(data);
+                String[] columns = {"Rodzaj transakcji", "Kwota"};
+                DefaultTableModel tableModel = new DefaultTableModel(data, columns);
+
+                JTable transactions = new JTable(tableModel);
+                JScrollPane scrollPane = new JScrollPane(transactions);
+                jPanel.add(scrollPane);
+            }catch (SQLException e){
+                JOptionPane.showMessageDialog(this, "Brak transakcji do pokazania");
+            }
+
+            jPanel.add(quitButton);
+
+            addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    parent.setVisible(true);
+                }
+            });
+
+            setSize(400, 300);
+            setVisible(true);
+
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == quitButton){
+                parent.setVisible(true);
+                dispose();
+            }
+        }
     }
 }
