@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.sql.*;
 
 public class Client extends JFrame implements ActionListener {
@@ -113,6 +114,32 @@ public class Client extends JFrame implements ActionListener {
 
         nameFillLabel.setText(firstName + " " + lastName);
 
+    }
+
+    protected void deleteAccount(){
+        // TODO FIX SQL
+        PreparedStatement deleteCards = null;
+        PreparedStatement deleteAccount = null;
+        PreparedStatement deleteClient = null;
+        try {
+            deleteCards = connection.prepareStatement("DELETE FROM credit_card WHERE client_id = ?");
+            deleteAccount = connection.prepareStatement("DELETE FROM accounts WHERE client_id = ?");
+            deleteClient = connection.prepareStatement("DELETE FROM clients WHERE id = ?");
+
+            deleteCards.setInt(1, this.id);
+            deleteAccount.setInt(1, this.id);
+            deleteClient.setInt(1, this.id);
+
+            deleteCards.executeUpdate();
+            deleteAccount.executeUpdate();
+            deleteClient.executeUpdate();
+
+        }catch (SQLException e){
+            System.out.println(e);
+            return;
+        }
+
+        dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
 
     public String getFirstName() {
