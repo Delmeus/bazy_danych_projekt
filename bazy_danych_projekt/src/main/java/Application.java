@@ -1,5 +1,8 @@
 import Forms.Client.Client;
+import Forms.LogInForm;
+import com.mysql.cj.log.Log;
 
+import javax.swing.*;
 import java.sql.*;
 
 public class Application {
@@ -10,6 +13,9 @@ public class Application {
         ResultSet set = null;
         Connection connection = null;
         Statement statement = null;
+
+        // TODO: get the login from to work correctly
+
         if(args[3].equals("C")) {
             try {
                 //Class.forName("com.mysql.cj.jdbc.Driver");
