@@ -78,10 +78,11 @@ SELECT * FROM client_credentials_view;
 --
 -- Widok do wyswietlania transakcji
 --
-
 CREATE VIEW transactions_view AS
 SELECT
-    MAX(transaction_type.transaction_name) AS "Rodzaj transakcji",
+	clients.id AS "ID klienta",
+    transaction_type.transaction_name AS "Rodzaj transakcji",
+    transactions.transaction_date AS "Data",
     transactions.amount AS "Kwota",
     accounts.account_number AS "Numer konta"
 FROM 
@@ -90,9 +91,8 @@ JOIN
     transaction_type ON transactions.type_id = transaction_type.id
 JOIN
     accounts ON accounts.id = transactions.account_id
-GROUP BY
-    transactions.amount, accounts.account_number;
-    
+JOIN
+	clients ON clients.id = accounts.id;
 --
 -- Widok do wyswietlana wydziałów
 --

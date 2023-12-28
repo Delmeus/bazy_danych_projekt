@@ -23,9 +23,9 @@ END //
 
 DELIMITER ;
 
-INSERT INTO transactions (amount, type_id, account_id)
+INSERT INTO transactions (amount, type_id, account_id, transaction_date)
 VALUES
-(11.49, 3, 1);
+(46.73, 6, 1, current_date());
 
 DROP TRIGGER update_balance; 
 
@@ -33,7 +33,9 @@ SELECT * FROM accounts;
 
 SELECT * FROM transaction_type;
 
-DESC transactions;
+SELECT * FROM transactions WHERE account_id = 1;
+
+SELECT * FROM transactions_view WHERE `ID klienta` = 1;
 
 
 

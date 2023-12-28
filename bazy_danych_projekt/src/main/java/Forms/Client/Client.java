@@ -192,16 +192,16 @@ public class Client extends JFrame implements ActionListener {
             ArrayList<Object[]> dataList = new ArrayList<>();
 
             try{
-                PreparedStatement preparedStatement = Client.this.connection.prepareStatement("SELECT `Rodzaj transakcji`, Kwota FROM transactions_view WHERE `Numer konta` = ?");
+                PreparedStatement preparedStatement = Client.this.connection.prepareStatement("SELECT `Rodzaj transakcji`, Data, Kwota FROM transactions_view WHERE `Numer konta` = ?");
                 preparedStatement.setString(1, Client.this.accountNumber);
                 ResultSet set = preparedStatement.executeQuery();
                 while(set.next()){
-                    Object[] row = new Object[]{set.getString(1), set.getDouble(2)};
+                    Object[] row = new Object[]{set.getString(1), set.getDate(2),set.getDouble(3)};
                     dataList.add(row);
                 }
                 Object[][] data = new Object[dataList.size()][];
                 dataList.toArray(data);
-                String[] columns = {"Rodzaj transakcji", "Kwota"};
+                String[] columns = {"Rodzaj transakcji", "Data","Kwota"};
                 DefaultTableModel tableModel = new DefaultTableModel(data, columns);
 
                 JTable transactions = new JTable(tableModel);

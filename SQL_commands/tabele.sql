@@ -47,6 +47,8 @@ CREATE TABLE transactions (
     FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
+ALTER TABLE transactions ADD COLUMN transaction_date DATE;
+
 CREATE TABLE Credit_Card (
     id INT PRIMARY KEY AUTO_INCREMENT,
     card_number VARCHAR(16),
