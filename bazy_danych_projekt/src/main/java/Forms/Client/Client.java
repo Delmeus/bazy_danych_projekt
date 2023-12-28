@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Client extends JFrame implements ActionListener {
     private JButton manageCardsButton;
@@ -149,6 +150,46 @@ public class Client extends JFrame implements ActionListener {
         dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
 
+    protected boolean makeTransaction(boolean standard, double amount, String receiver){
+        PreparedStatement insertTransaction = null;
+        PreparedStatement subtractExpressCost = null;
+        try{
+            insertTransaction = connection.prepareStatement("INSERT INTO transactions(amount, type_id, account_id, transaction_date) VALUES (?, ?, ?, ?)");
+            insertTransaction.setDouble(1, amount);
+            insertTransaction.setString(3,receiver);
+            if(standard){
+                insertTransaction.setInt(2, 1);
+                //TODO insert proper date (today vs tommorow)
+                java.util.Date javaDate = new java.util.Date();
+                java.sql.Date mySQLDate = new java.sql.Date(javaDate.getTime());
+                insertTransaction.setDate(4, mySQLDate);
+            }
+            else{
+                insertTransaction.setInt(2, 2);
+                subtractExpressCost = connection.prepareStatement("UPDATE accounts SET balance = balance - 5 WHERE client_id = ?");
+                subtractExpressCost.setInt(1,id);
+                subtractExpressCost.executeUpdate();
+            }
+
+            insertTransaction.executeUpdate();
+        }catch (Exception e){
+            System.out.println(e);
+            return false;
+        }
+
+        PreparedStatement transferMoneyToReceiver = null;
+        try {
+            transferMoneyToReceiver = connection.prepareStatement("UPDATE accounts SET balance = balance + ? WHERE account_number = ?");
+            transferMoneyToReceiver.setDouble(1, amount);
+            transferMoneyToReceiver.setString(2, receiver);
+            transferMoneyToReceiver.executeUpdate();
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, "Przelano do klienta innego banku");
+        }
+
+        return true;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -163,6 +204,14 @@ public class Client extends JFrame implements ActionListener {
 
     public String getCity() {
         return city;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
     }
 
     private class transactionsFrame extends JFrame implements ActionListener{
