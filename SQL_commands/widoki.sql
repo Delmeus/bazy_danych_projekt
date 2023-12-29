@@ -1,4 +1,22 @@
+--
+-- Widok pokazujacy kompletne informacje o pracownikach
+--
+CREATE VIEW employees_info_view AS
+SELECT
+	employees.id AS "ID",
+    employees.first_name AS "Imię",
+    employees.last_name AS "Nazwisko",
+    employees.position AS "Stanowisko",
+    departments.department_name AS "Nazwa oddzialu",
+    departments.address AS "Adres oddzialu"
+FROM
+	employees
+JOIN
+	departments ON employees.department_id = departments.id
+GROUP BY
+	employees.id;
 
+SELECT * FROM employees_info_view;
 
 --
 -- Widok pokazujacy kompletne informacje o klientach
@@ -13,31 +31,31 @@ SELECT
     accounts.balance AS "Saldo",
     accounts.account_number AS "Numer konta",
     accounts.id AS "ID konta"
-FROM 
+FROM
 	clients
 JOIN
 	accounts ON accounts.client_id = clients.id
 GROUP BY
 	clients.id, accounts.account_number;
-    
+
 SELECT * FROM clients_info_view;
-    
+
 --
 -- Widok do sprawdzania stanu konta
 --
 
-CREATE VIEW check_balance_view AS 
+CREATE VIEW check_balance_view AS
 SELECT
 	CONCAT(clients.first_name, ' ', clients.last_name) AS "Imie i nazwisko",
-	accounts.account_number AS "Numer konta", 
+	accounts.account_number AS "Numer konta",
     accounts.balance AS "Saldo"
-FROM 
+FROM
 	accounts
-JOIN 
+JOIN
 	clients ON clients.id = accounts.client_id
 GROUP BY
 	clients.id, "Imie i nazwisko", accounts.account_number;
-    
+
 SELECT * FROM check_balance_view;
 
 --
@@ -73,7 +91,7 @@ JOIN
     accounts ON clients.id = accounts.client_id
 GROUP BY
     clients.id, "Imie i nazwisko", "Adres zamieszkania";
-    
+
 SELECT * FROM client_credentials_view;
 
 --
@@ -86,7 +104,7 @@ SELECT
     transactions.transaction_date AS "Data",
     transactions.amount AS "Kwota",
     accounts.account_number AS "Numer konta"
-FROM 
+FROM
     transactions
 JOIN
     transaction_type ON transactions.type_id = transaction_type.id
@@ -103,13 +121,13 @@ SELECT
     departments.department_name AS "Oddzial",
     departments.address AS "Adres",
     COUNT(employees.id) AS "Liczba pracownikow"
-FROM 
+FROM
     departments
 JOIN
     employees ON departments.id = employees.department_id
 GROUP BY
     departments.department_name, departments.address;
-    
+
 SELECT * FROM departments_view;
 
 --
@@ -135,28 +153,28 @@ CREATE INDEX account_number_index ON accounts(account_number);
 -- Usuniecie widokow
 --
 
-DROP VIEW clients_info_view;
-DROP VIEW departments_view;
-DROP VIEW transactions_view;
-DROP VIEW client_cards_view;
-DROP VIEW check_balance_view;
-DROP VIEW client_credentials_view;
-
---
--- Usuniecie indeksow
---
-
-DROP INDEX client_id_index ON clients;
-DROP INDEX employee_id_index ON employees;
-DROP INDEX card_number_index ON credit_card;
-DROP INDEX card_producent_index ON credit_card;
-
-DROP INDEX transaction_id ON transactions;
-DROP INDEX transaction_amount ON transactions;
-DROP INDEX transaction_type_index ON transactions;
-DROP INDEX transaction_account ON transactions;
-
-DROP INDEX department_name_index ON departments;
-DROP INDEX department_id_index ON departments;
-
-DROP INDEX account_number_index ON accounts;
+-- DROP VIEW clients_info_view;
+-- DROP VIEW departments_view;
+-- DROP VIEW transactions_view;
+-- DROP VIEW client_cards_view;
+-- DROP VIEW check_balance_view;
+-- DROP VIEW client_credentials_view;
+-- 
+-- --
+-- -- Usuniecie indeksow
+-- --
+-- 
+-- DROP INDEX client_id_index ON clients;
+-- DROP INDEX employee_id_index ON employees;
+-- DROP INDEX card_number_index ON credit_card;
+-- DROP INDEX card_producent_index ON credit_card;
+-- 
+-- DROP INDEX transaction_id ON transactions;
+-- DROP INDEX transaction_amount ON transactions;
+-- DROP INDEXaccounts transaction_type_index ON transactions;
+-- DROP INDEX transaction_account ON transactions;
+-- 
+-- DROP INDEX department_name_index ON departments;
+-- DROP INDEX department_id_index ON departments;
+-- 
+-- DROP INDEX account_number_index ON accounts;

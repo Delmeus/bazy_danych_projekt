@@ -27,7 +27,7 @@ INSERT INTO transactions (amount, type_id, account_id, transaction_date)
 VALUES
 (46.73, 6, 1, current_date());
 
-DROP TRIGGER update_balance; 
+DROP TRIGGER update_balance;
 
 SELECT * FROM accounts;
 

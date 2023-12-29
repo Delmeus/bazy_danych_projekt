@@ -297,24 +297,24 @@ INSERT INTO employees(first_name, last_name, position, department_id) VALUES
 
 -- Dane do tabeli transaction_type --
 
-INSERT INTO transaction_type (transaction_name) 
+INSERT INTO transaction_type (transaction_name)
 VALUES ('przelew przychodzacy'),
 ('przelew wychodzacy');
 
-INSERT INTO transaction_type (transaction_name) 
+INSERT INTO transaction_type (transaction_name)
 VALUES ('zwrot');
 
 
-INSERT INTO transaction_type (transaction_name) 
+INSERT INTO transaction_type (transaction_name)
 VALUES ('platnosc karta');
 
 
-INSERT INTO transaction_type (transaction_name) 
+INSERT INTO transaction_type (transaction_name)
 VALUES ('przelew telefonem przychodzacy'),
 ('przelew telefonem wychodzacy');
 
 
-INSERT INTO transaction_type (transaction_name) 
+INSERT INTO transaction_type (transaction_name)
 VALUES ('przelew natychmiastowy przychodzacy'),
 ('przelew natychmiastowy wychodzacy');
 
@@ -558,4 +558,3 @@ VALUES    ('1234567890123456', '2025-12-25', 1, 'Visa'),
 	('5535666677778888', '2026-03-26', 112, 'Discover'),
 	('9939888877776666', '2028-01-28', 113, 'Visa'),
 	('1131222233334444', '2025-12-25', 114, 'MasterCard');
-	
