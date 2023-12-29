@@ -11,7 +11,8 @@ SELECT
     clients.address AS "Adres",
     clients.city AS "Miasto",
     accounts.balance AS "Saldo",
-    accounts.account_number AS "Numer konta"
+    accounts.account_number AS "Numer konta",
+    accounts.id AS "ID konta"
 FROM 
 	clients
 JOIN
@@ -134,7 +135,7 @@ CREATE INDEX account_number_index ON accounts(account_number);
 -- Usuniecie widokow
 --
 
-
+DROP VIEW clients_info_view;
 DROP VIEW departments_view;
 DROP VIEW transactions_view;
 DROP VIEW client_cards_view;

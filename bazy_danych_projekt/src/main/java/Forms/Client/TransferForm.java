@@ -68,7 +68,7 @@ public class TransferForm extends JFrame implements ActionListener {
                 return;
             }
 
-            boolean success = parent.makeTransaction(transactionTypeBox.getSelectedIndex() == 0, amount, receiverTextField.getText());
+            boolean success = parent.makeTransaction(transactionTypeBox.getSelectedIndex() == 0, amount, receiverTextField.getText(), this);
 
             if(!success){
                 JOptionPane.showMessageDialog(this, "Przelew nie powiódł się");

@@ -115,7 +115,7 @@
         </constraints>
         <properties>
           <foreground color="-1"/>
-          <text value="Label"/>
+          <text value="Rodzaj przelewu"/>
         </properties>
       </component>
     </children>

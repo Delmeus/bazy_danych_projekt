@@ -14,7 +14,7 @@ public class Application {
         Connection connection = null;
         Statement statement = null;
 
-        // TODO: get the login from to work correctly
+        // TODO: get the login form to work correctly
 
         if(args[3].equals("C")) {
             try {
@@ -32,7 +32,7 @@ public class Application {
                 }
 
                 set.next();
-                new Client(set.getInt(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5), set.getDouble(6), set.getString(7));
+                new Client(set.getInt(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5), set.getDouble(6), set.getString(7), set.getInt(8));
 
             } catch (Exception e) {
                 System.out.println(e);

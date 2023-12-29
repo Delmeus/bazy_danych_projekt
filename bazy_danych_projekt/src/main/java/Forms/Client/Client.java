@@ -31,13 +31,14 @@ public class Client extends JFrame implements ActionListener {
     private String lastName;
     private String address;
     private String city;
-    private final int id;
+    private final int clientId;
+    private final int accountId;
     private final String accountNumber;
     private double balance;
 
     private Connection connection = null;
 
-    public Client(int id, String firstName, String lastName, String address, String city, Double balance, String accountNumber) {
+    public Client(int clientId, String firstName, String lastName, String address, String city, Double balance, String accountNumber, int accountId) {
 
         try{
             connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
@@ -49,9 +50,10 @@ public class Client extends JFrame implements ActionListener {
         this.lastName = lastName;
         this.address = address;
         this.city = city;
-        this.id = id;
+        this.clientId = clientId;
         this.balance = balance;
         this.accountNumber = accountNumber;
+        this.accountId = accountId;
         setTitle("Aplikacja Klienta");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,7 +110,7 @@ public class Client extends JFrame implements ActionListener {
             preparedStatement.setString(2, lastName);
             preparedStatement.setString(3, address);
             preparedStatement.setString(4, city);
-            preparedStatement.setInt(5, this.id);
+            preparedStatement.setInt(5, this.clientId);
 
             preparedStatement.executeUpdate();
         }catch (SQLException e){
@@ -116,13 +118,7 @@ public class Client extends JFrame implements ActionListener {
             return;
         }
 
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.address = address;
-        this.city = city;
-
-        nameFillLabel.setText(firstName + " " + lastName);
-
+        updateClientInfo();
     }
 
     protected void deleteAccount(){
@@ -134,9 +130,9 @@ public class Client extends JFrame implements ActionListener {
             deleteAccount = connection.prepareStatement("DELETE FROM accounts WHERE client_id = ?");
             deleteClient = connection.prepareStatement("DELETE FROM clients WHERE id = ?");
 
-            deleteCards.setInt(1, this.id);
-            deleteAccount.setInt(1, this.id);
-            deleteClient.setInt(1, this.id);
+            deleteCards.setInt(1, this.clientId);
+            deleteAccount.setInt(1, this.clientId);
+            deleteClient.setInt(1, this.clientId);
 
             deleteCards.executeUpdate();
             deleteAccount.executeUpdate();
@@ -150,44 +146,91 @@ public class Client extends JFrame implements ActionListener {
         dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
 
-    protected boolean makeTransaction(boolean standard, double amount, String receiver){
+    protected boolean makeTransaction(boolean standard, double amount, String receiver, TransferForm form){
         PreparedStatement insertTransaction = null;
         PreparedStatement subtractExpressCost = null;
+        java.util.Date javaDate = new java.util.Date();
+        java.sql.Date mySQLDate = new java.sql.Date(javaDate.getTime());
+        int transactionTypeId;
         try{
             insertTransaction = connection.prepareStatement("INSERT INTO transactions(amount, type_id, account_id, transaction_date) VALUES (?, ?, ?, ?)");
             insertTransaction.setDouble(1, amount);
-            insertTransaction.setString(3,receiver);
+            insertTransaction.setInt(3, accountId);
+
             if(standard){
-                insertTransaction.setInt(2, 1);
-                //TODO insert proper date (today vs tommorow)
-                java.util.Date javaDate = new java.util.Date();
-                java.sql.Date mySQLDate = new java.sql.Date(javaDate.getTime());
-                insertTransaction.setDate(4, mySQLDate);
+                transactionTypeId = 2;
+                insertTransaction.setInt(2, transactionTypeId);
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(mySQLDate);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+                insertTransaction.setDate(4, new java.sql.Date(calendar.getTimeInMillis()));
             }
             else{
-                insertTransaction.setInt(2, 2);
+                transactionTypeId = 8;
+                insertTransaction.setInt(2, transactionTypeId);
+                insertTransaction.setDate(4, mySQLDate);
+
                 subtractExpressCost = connection.prepareStatement("UPDATE accounts SET balance = balance - 5 WHERE client_id = ?");
-                subtractExpressCost.setInt(1,id);
+                subtractExpressCost.setInt(1, clientId);
+
                 subtractExpressCost.executeUpdate();
             }
 
             insertTransaction.executeUpdate();
         }catch (Exception e){
-            System.out.println(e);
+            System.out.println(e + " TTT");
             return false;
         }
 
         PreparedStatement transferMoneyToReceiver = null;
+        PreparedStatement getAccountID = null;
+        PreparedStatement insertIncoming = null;
         try {
-            transferMoneyToReceiver = connection.prepareStatement("UPDATE accounts SET balance = balance + ? WHERE account_number = ?");
-            transferMoneyToReceiver.setDouble(1, amount);
-            transferMoneyToReceiver.setString(2, receiver);
-            transferMoneyToReceiver.executeUpdate();
+            getAccountID = connection.prepareStatement("SELECT clients_info_view.`ID konta` FROM clients_info_view WHERE `Numer konta` = ?");
+            getAccountID.setString(1, receiver);
+            ResultSet resultSet = getAccountID.executeQuery();
+            resultSet.next();
+
+            insertIncoming = connection.prepareStatement("INSERT INTO transactions (amount, type_id, account_id, transaction_date) VALUES (?, ?, ?, ?)");
+            insertIncoming.setDouble(1, amount);
+            insertIncoming.setInt(2, transactionTypeId - 1);
+            insertIncoming.setInt(3, resultSet.getInt(1));
+            insertIncoming.setDate(4, mySQLDate);
+            insertIncoming.executeUpdate();
         }catch (SQLException e){
-            JOptionPane.showMessageDialog(this, "Przelano do klienta innego banku");
+            JOptionPane.showMessageDialog(form, "Przelano do klienta innego banku");
         }
 
+        updateClientInfo();
         return true;
+    }
+
+
+
+    private void updateClientInfo(){
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT `Imię`, `Nazwisko`, `Adres`, `Miasto`, `Saldo` FROM clients_info_view WHERE ID = ?");
+            preparedStatement.setInt(1, clientId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            firstName = resultSet.getString(1);
+            lastName = resultSet.getString(2);
+            address = resultSet.getString(3);
+            city = resultSet.getString(4);
+            balance = resultSet.getDouble(5);
+
+            repaint();
+
+        }catch (SQLException e){
+            System.out.println(e);
+            return;
+        }
+
+        nameFillLabel.setText(firstName + " " + lastName);
+        balanceFillLabel.setText(String.valueOf(balance));
     }
 
     public String getFirstName() {
@@ -214,6 +257,7 @@ public class Client extends JFrame implements ActionListener {
         return accountNumber;
     }
 
+    // History of transactions
     private class transactionsFrame extends JFrame implements ActionListener{
         private final Client parent;
         private final JButton quitButton;
@@ -254,6 +298,7 @@ public class Client extends JFrame implements ActionListener {
                 DefaultTableModel tableModel = new DefaultTableModel(data, columns);
 
                 JTable transactions = new JTable(tableModel);
+                transactions.getColumnModel().getColumn(0).setMinWidth(220);
                 JScrollPane scrollPane = new JScrollPane(transactions);
                 jPanel.add(scrollPane);
             }catch (SQLException e){
