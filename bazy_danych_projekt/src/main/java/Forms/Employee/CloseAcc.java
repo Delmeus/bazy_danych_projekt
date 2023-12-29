@@ -1,4 +1,6 @@
 package Forms.Employee;
+
+
 import Forms.Client.Client;
 
 import javax.swing.*;
@@ -6,7 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ManageAcc extends JFrame implements ActionListener {
+public class CloseAcc extends JFrame implements ActionListener {
     private JPanel mainPanel;
     private JLabel mainLabel;
     private JLabel firstNameLabel;
@@ -22,18 +24,15 @@ public class ManageAcc extends JFrame implements ActionListener {
     private JTextField cityTextField;
     private JButton quitButton;
     private JLabel cityLabel;
-    private JLabel imieLabel;
-    private JTextField textField1;
     private JButton deleteButton;
 
 
     private final Employee parent;
-    public ManageAcc(Employee employee) {
+    public CloseAcc(Employee employee) {
         parent = employee;
 
-
-        acceptButton.addActionListener(this);
         quitButton.addActionListener(this);
+        deleteButton.addActionListener(this);
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -54,7 +53,7 @@ public class ManageAcc extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == acceptButton){
-            parent.updateCredentials(firstNameField.getText(), lastNameField.getText(), addressField.getText(), cityTextField.getText());
+//            parent.updateCredentials(firstNameField.getText(), lastNameField.getText(), addressField.getText(), cityTextField.getText());
             dispose();
             parent.setVisible(true);
         }
@@ -75,8 +74,7 @@ public class ManageAcc extends JFrame implements ActionListener {
             jPanel.add(yesButton);
             jPanel.add(noButton);
 
-//            yesButton.addActionListener(new Forms.Client.ClientCredentialsForm.YesButtonActionListener(frame));
-//            noButton.addActionListener(new Forms.Client.ClientCredentialsForm.NoButtonActionListener(frame));
+
 
             addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
@@ -101,7 +99,7 @@ public class ManageAcc extends JFrame implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-//            Forms.Client.ClientCredentialsForm.this.parent.deleteAccount();
+            Forms.Employee.CloseAcc.this.parent.deleteAccount();
             parent.dispose();
         }
     }
@@ -119,3 +117,4 @@ public class ManageAcc extends JFrame implements ActionListener {
     }
 
 }
+

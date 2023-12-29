@@ -14,9 +14,7 @@ import java.util.Calendar;
 
 public class Employee extends JFrame implements ActionListener {
 
-    private JButton manageCardsButton;
-    private JButton changeAccountDetailsButton;
-    private JButton transferMoneyButton;
+    private JButton closeAccButton;
     private JButton loanButton;
     private JPanel jPanel;
     private JLabel mainLabel;
@@ -28,7 +26,7 @@ public class Employee extends JFrame implements ActionListener {
     private JLabel branchNameFillLabel;
 //    private JLabel branchAdressFillLabel;
     private JLabel titleLabel;
-    private JButton transactionsHistoryButton;
+    private JButton changeDataButton;
     private JLabel adresOddziałuLabel;
     private JLabel label1;
 
@@ -60,11 +58,9 @@ public class Employee extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setContentPane(jPanel);
-        manageCardsButton.addActionListener(this);
-        changeAccountDetailsButton.addActionListener(this);
-        transferMoneyButton.addActionListener(this);
+        closeAccButton.addActionListener(this);
         loanButton.addActionListener(this);
-        transactionsHistoryButton.addActionListener(this);
+        changeDataButton.addActionListener(this);
 
         nameFillLabel.setText(firstName + " " + lastName);
         positionFillLabel.setText(position);
@@ -77,19 +73,18 @@ public class Employee extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == changeAccountDetailsButton) {
+        if (e.getSource() == loanButton) {
             setVisible(false);
-//            new ClientCredentialsForm(this);
+            new LoanAva(this);
         }
-//    }
-//        else if(e.getSource() == transferMoneyButton){
-//            setVisible(false);
-//            new TransferForm(this);
-//        }
-//        else if(e.getSource() == loanButton){
-//            setVisible(false);
-//            new LoanForm(this);
-//        }
+        else if(e.getSource() == changeDataButton){
+            setVisible(false);
+            new ManageAcc(this);
+        }
+        else if(e.getSource() == closeAccButton){
+            setVisible(false);
+            new CloseAcc(this);
+        }
 //        else if(e.getSource() == manageCardsButton){
 //            setVisible(false);
 //            new CreditCardsForm(this);

@@ -1,8 +1,6 @@
 package Forms.Employee;
 
 
-import Forms.Client.Client;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +13,14 @@ public class LoanAva extends JFrame implements ActionListener {
     private JButton performButton;
     private JButton quitButton;
     private JLabel titleLabel;
+    private JLabel saldoNaKoncieKlientaLabel;
+    private JTextField textField1;
+    private JLabel łącznyObrótNaKoncieLabel;
+    private JTextField textField2;
+    private JLabel imięINazwiskoKlientaLabel;
+    private JTextField textField3;
+    private JLabel adresZamieszkaniaKlientaLabel;
+    private JTextField textField4;
 
     private final Employee parent;
 
