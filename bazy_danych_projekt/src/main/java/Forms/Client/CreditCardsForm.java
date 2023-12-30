@@ -1,22 +1,34 @@
 package Forms.Client;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class CreditCardsForm extends JFrame implements ActionListener {
     private JPanel mainPanel;
     private JLabel titleLabel;
     private JLabel cardsLabel;
-    private JTable table1;
     private JButton orderCardButton;
     private JButton quitButton;
+    private JList<String> list1;
 
     private final Client parent;
 
     public CreditCardsForm(Client parent){
         this.parent = parent;
+
+        //TODO low priority : change list to JTable
+        ArrayList<String> dataList = new ArrayList<>();
+        for(CreditCard card : parent.getCreditCards()){
+            dataList.add(card.toString());
+        }
+        String[] data = new String[dataList.size()];
+        dataList.toArray(data);
+
+        list1.setListData(data);
 
         orderCardButton.addActionListener(this);
         quitButton.addActionListener(this);
@@ -40,6 +52,10 @@ public class CreditCardsForm extends JFrame implements ActionListener {
             parent.setVisible(true);
         }
         else if(e.getSource() == orderCardButton){
+            if(parent.getCreditCards().size() >= 3){
+                JOptionPane.showMessageDialog(this, "Nie można posiadać więcej niż 3 karty kredytowe");
+                return;
+            }
             new OrderCreditCardForm(parent);
         }
     }

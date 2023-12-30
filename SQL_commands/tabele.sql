@@ -40,7 +40,7 @@ CREATE TABLE transaction_type (
 
 CREATE TABLE transactions (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    amount DECIMAL(15, 2) NULL ,
+    amount DECIMAL(15, 2) NULL , 
     type_id INT NULL,
     account_id INT NOT NULL,
     FOREIGN KEY (type_id) REFERENCES transaction_type(id),
@@ -62,10 +62,10 @@ CREATE TABLE Credit_Card (
 -- Usuwanei tabel
 --
 
--- DROP TABLE credit_card;
--- DROP TABLE transactions;
--- DROP TABLE transaction_type;
--- DROP TABLE employees;
--- DROP TABLE departments;
--- DROP TABLE accounts;
--- DROP TABLE clients;
+DROP TABLE credit_card;
+DROP TABLE transactions;
+DROP TABLE transaction_type;
+DROP TABLE employees;
+DROP TABLE departments;
+DROP TABLE accounts;
+DROP TABLE clients;

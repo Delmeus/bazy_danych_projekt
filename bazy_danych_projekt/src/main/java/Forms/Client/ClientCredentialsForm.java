@@ -15,8 +15,6 @@ public class ClientCredentialsForm extends JFrame implements ActionListener {
     private JTextField lastNameField;
     private JTextField addressField;
     private JButton acceptButton;
-    private JLabel cardsLabel;
-    private JList cardList;
     private JLabel titleLabel;
     private JTextField cityTextField;
     private JButton quitButton;

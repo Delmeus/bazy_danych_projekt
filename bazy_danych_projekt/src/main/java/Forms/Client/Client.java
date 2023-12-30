@@ -35,13 +35,20 @@ public class Client extends JFrame implements ActionListener {
     private final int accountId;
     private final String accountNumber;
     private double balance;
+    private ArrayList<CreditCard> creditCards;
 
     private Connection connection = null;
 
     public Client(int clientId, String firstName, String lastName, String address, String city, Double balance, String accountNumber, int accountId) {
-
-        try{
+        creditCards = new ArrayList<>();
+        try {
             connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
+            PreparedStatement preparedStatement = Client.this.connection.prepareStatement("SELECT `Numer karty`, `Data ważności`, Producent FROM cards_view WHERE `Id klienta` = ?");
+            preparedStatement.setInt(1, clientId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                creditCards.add(new CreditCard(resultSet.getString(1), resultSet.getDate(2), resultSet.getString(3)));
+            }
         }catch (Exception e){
             System.out.println(e);
         }
@@ -180,7 +187,7 @@ public class Client extends JFrame implements ActionListener {
 
             insertTransaction.executeUpdate();
         }catch (Exception e){
-            System.out.println(e + " TTT");
+            System.out.println(e);
             return false;
         }
 
@@ -257,6 +264,10 @@ public class Client extends JFrame implements ActionListener {
         return accountNumber;
     }
 
+    public ArrayList<CreditCard> getCreditCards() {
+        return creditCards;
+    }
+
     // History of transactions
     private class transactionsFrame extends JFrame implements ActionListener{
         private final Client parent;
@@ -327,4 +338,5 @@ public class Client extends JFrame implements ActionListener {
             }
         }
     }
+
 }

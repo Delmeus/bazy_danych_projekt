@@ -58,6 +58,22 @@ GROUP BY
 
 SELECT * FROM check_balance_view;
 
+-- 
+-- Widok do sprawdzenia kart 
+--
+CREATE VIEW cards_view AS
+SELECT
+	credit_card.client_id AS "Id klienta",
+	CONCAT(clients.first_name, ' ', clients.last_name) AS "Właściciel",
+	credit_card.card_number AS "Numer karty",
+    credit_card.expiry_date AS "Data ważności",
+    credit_card.producent_name AS "Producent"
+FROM
+	credit_card
+JOIN 
+	clients ON clients.id = credit_card.client_id;
+
+SELECT * FROM cards_view WHERE `Id klienta` = 1;
 --
 -- Widok do sprawdzania ilosci kart
 --
