@@ -1,5 +1,4 @@
 package Forms.Employee;
-import Forms.Client.Client;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +21,7 @@ public class ManageAcc extends JFrame implements ActionListener {
     private JTextField cityTextField;
     private JButton quitButton;
     private JLabel cityLabel;
-    private JLabel imieLabel;
+    private JLabel nameLabel;
     private JTextField textField1;
     private JButton deleteButton;
 

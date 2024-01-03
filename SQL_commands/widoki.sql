@@ -1,4 +1,38 @@
 --
+-- Widok danych potrzebnych do rozpatrzenia wniosku o pożyczkę
+--
+CREATE VIEW loan_info_view AS
+SELECT
+	loans.id AS "ID",
+    loans.amount AS "Kwota",
+    loans.approved AS "Zatwierdzono",
+    clients.id AS "ID klienta",
+    CONCAT(clients.first_name, ' ', clients.last_name) AS "Imie i nazwisko",
+    CONCAT(clients.address, ' ', clients.city) AS "Adres zamieszkania",
+    accounts.balance AS "Saldo klienta",
+    SUM(transactions.amount) AS "Obrót na koncie"
+FROM
+    loans
+LEFT JOIN
+    clients ON clients.id = loans.client_id
+LEFT JOIN
+    accounts ON accounts.client_id = clients.id
+LEFT JOIN
+    transactions ON transactions.account_id = accounts.id
+GROUP BY
+	loans.id,
+    loans.amount,
+    CONCAT(clients.first_name, ' ', clients.last_name),
+    CONCAT(clients.address, ' ', clients.city),
+    accounts.balance;
+
+
+SELECT * FROM loan_info_view;	
+
+SELECT * FROM loans;
+SELECT * FROM transactions WHERE account_id = 1;
+
+--
 -- Widok pokazujacy kompletne informacje o pracownikach
 --
 CREATE VIEW employees_info_view AS
@@ -169,28 +203,29 @@ CREATE INDEX account_number_index ON accounts(account_number);
 -- Usuniecie widokow
 --
 
--- DROP VIEW clients_info_view;
--- DROP VIEW departments_view;
--- DROP VIEW transactions_view;
--- DROP VIEW client_cards_view;
--- DROP VIEW check_balance_view;
--- DROP VIEW client_credentials_view;
--- 
--- --
--- -- Usuniecie indeksow
--- --
--- 
--- DROP INDEX client_id_index ON clients;
--- DROP INDEX employee_id_index ON employees;
--- DROP INDEX card_number_index ON credit_card;
--- DROP INDEX card_producent_index ON credit_card;
--- 
--- DROP INDEX transaction_id ON transactions;
--- DROP INDEX transaction_amount ON transactions;
+DROP VIEW loan_info_view;
+DROP VIEW clients_info_view;
+DROP VIEW departments_view;
+DROP VIEW transactions_view;
+DROP VIEW client_cards_view;
+DROP VIEW check_balance_view;
+DROP VIEW client_credentials_view;
+
+--
+-- Usuniecie indeksow
+--
+
+DROP INDEX client_id_index ON clients;
+DROP INDEX employee_id_index ON employees;
+DROP INDEX card_number_index ON credit_card;
+DROP INDEX card_producent_index ON credit_card;
+
+DROP INDEX transaction_id ON transactions;
+DROP INDEX transaction_amount ON transactions;
 -- DROP INDEXaccounts transaction_type_index ON transactions;
--- DROP INDEX transaction_account ON transactions;
--- 
--- DROP INDEX department_name_index ON departments;
--- DROP INDEX department_id_index ON departments;
--- 
--- DROP INDEX account_number_index ON accounts;
+DROP INDEX transaction_account ON transactions;
+
+DROP INDEX department_name_index ON departments;
+DROP INDEX department_id_index ON departments;
+
+DROP INDEX account_number_index ON accounts;

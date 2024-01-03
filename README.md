@@ -1,10 +1,10 @@
 # bazy_danych_projekt
 
 ## TODO
--[ ] Pożyczki
-- -[ ] Tabela z pożyczkami? (id, id klienta, kwota, bool zatwierdzona) + trigger
-- - [ ] Składanie wniosku o pożyczkę jako klient
-- - [ ] Rozpatrywanie wniosku jako pracownik
+-[x] Pożyczki
+- -[x] Tabela z pożyczkami? (id, id klienta, kwota, bool zatwierdzona) + trigger
+- - [x] Składanie wniosku o pożyczkę jako klient
+- - [x] Rozpatrywanie wniosku jako pracownik
 -[ ] Zamawianie kart kredytowych
 - [ ] Może jakiś system wybierania klientów dla pracownika? Żeby nie trzeba było po id lecieć
 - [ ] Ogarnięcie formularzu logowania (low prio - ewentualnie zostanie odpalanie za pomoca parametrow)

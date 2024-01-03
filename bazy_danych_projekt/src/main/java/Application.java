@@ -20,7 +20,7 @@ public class Application {
         if(args[3].equals("C")) {
             try {
                 //Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
+                connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "root");
                 statement = connection.createStatement();
 
                 PreparedStatement preparedStatement = connection.prepareStatement("select * from clients_info_view where id = ?");
@@ -34,14 +34,14 @@ public class Application {
 
                 set.next();
                 new Client(set.getInt(1), set.getString(2), set.getString(3), set.getString(4), set.getString(5), set.getDouble(6), set.getString(7), set.getInt(8));
-
+                connection.close();
             } catch (Exception e) {
                 System.out.println(e);
             }
         }    if(args[3].equals("E")) {
             try {
                 //Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
+                connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "root");
                 statement = connection.createStatement();
 
                 PreparedStatement preparedStatement = connection.prepareStatement("select * from employees_info_view where id = ?");
@@ -55,13 +55,11 @@ public class Application {
 
                 set.next();
                 new Employee(set.getInt(1), set.getString(2), set.getString(3), set.getString(4),   set.getString(5),  set.getString(6));
-
+                connection.close();
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
-
-        //TODO: implement employee form
     }
 
 }

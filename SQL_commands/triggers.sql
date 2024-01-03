@@ -21,6 +21,18 @@ BEGIN
     END IF;
 END //
 
+DELIMITER //
+
+CREATE TRIGGER update_balance_loan
+AFTER UPDATE ON loans FOR EACH ROW
+BEGIN
+	 IF NEW.approved = 1 THEN
+		UPDATE accounts
+		SET balance = balance + NEW.amount
+        WHERE client_id = NEW.client_id;
+	END IF;
+END //
+
 DELIMITER ;
 
 INSERT INTO transactions (amount, type_id, account_id, transaction_date)
@@ -28,6 +40,7 @@ VALUES
 (46.73, 6, 1, current_date());
 
 DROP TRIGGER update_balance;
+DROP TRIGGER update_balance_loan;
 
 SELECT * FROM accounts;
 

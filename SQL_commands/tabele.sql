@@ -58,6 +58,14 @@ CREATE TABLE Credit_Card (
     FOREIGN KEY (client_id) REFERENCES Clients(id)
 );
 
+CREATE TABLE loans(
+	 id INT PRIMARY KEY AUTO_INCREMENT,
+     amount DECIMAL(15, 2) NOT NULL,
+     client_id INT NOT NULL,
+	 approved BOOL NULL,
+     FOREIGN KEY (client_id) REFERENCES clients(id)
+);
+
 --
 -- Usuwanei tabel
 --

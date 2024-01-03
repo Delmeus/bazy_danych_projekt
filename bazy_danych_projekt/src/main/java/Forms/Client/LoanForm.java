@@ -39,5 +39,17 @@ public class LoanForm extends JFrame implements ActionListener {
             dispose();
             parent.setVisible(true);
         }
+        if(e.getSource() == performButton){
+            double amount;
+            try {
+                amount = Double.parseDouble(amountTextField.getText());
+            }catch (Exception exception){
+                JOptionPane.showMessageDialog(this, "Niepoprawna kwota");
+                return;
+            }
+            parent.applyForLoan(amount);
+            dispose();
+            parent.setVisible(true);
+        }
     }
 }

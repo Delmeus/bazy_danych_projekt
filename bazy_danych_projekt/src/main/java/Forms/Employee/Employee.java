@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class Employee extends JFrame implements ActionListener {
 
@@ -24,7 +25,7 @@ public class Employee extends JFrame implements ActionListener {
     private JLabel nameFillLabel;
     private JLabel positionFillLabel;
     private JLabel branchNameFillLabel;
-//    private JLabel branchAdressFillLabel;
+    //    private JLabel branchAdressFillLabel;
     private JLabel titleLabel;
     private JButton changeDataButton;
     private JLabel adresOddziałuLabel;
@@ -50,8 +51,8 @@ public class Employee extends JFrame implements ActionListener {
 
         this.firstName = firstName;
         this.lastName = lastName;
-        this.address = position;
-        this.position = this.position;
+        this.address = branchAdress;
+        this.position = position;
         this.employeeId = employeeId;
         setTitle("Aplikacja Pracownika");
         setSize(300, 200);
@@ -76,12 +77,10 @@ public class Employee extends JFrame implements ActionListener {
         if (e.getSource() == loanButton) {
             setVisible(false);
             new LoanAva(this);
-        }
-        else if(e.getSource() == changeDataButton){
+        } else if (e.getSource() == changeDataButton) {
             setVisible(false);
             new ManageAcc(this);
-        }
-        else if(e.getSource() == closeAccButton){
+        } else if (e.getSource() == closeAccButton) {
             setVisible(false);
             new CloseAcc(this);
         }
@@ -96,231 +95,161 @@ public class Employee extends JFrame implements ActionListener {
 
     }
 
-            protected void updateCredentials (String firstName, String lastName, String address, String city){
-                // TODO check if given strings are logical (e.g return if firstName contains a digit)
+    protected void updateCredentials(String firstName, String lastName, String address, String city) {
+        // TODO check if given strings are logical (e.g return if firstName contains a digit)
 
-                PreparedStatement preparedStatement = null;
-                try {
-                    preparedStatement = connection.prepareStatement("UPDATE clients SET first_name = ?, last_name = ?, address = ?, city = ? WHERE id = ?");
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement("UPDATE clients SET first_name = ?, last_name = ?, address = ?, city = ? WHERE id = ?");
 
-                    preparedStatement.setString(1, firstName);
-                    preparedStatement.setString(2, lastName);
-                    preparedStatement.setString(3, address);
-                    preparedStatement.setString(4, city);
-                    preparedStatement.setInt(5, this.employeeId);
+            preparedStatement.setString(1, firstName);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setString(3, address);
+            preparedStatement.setString(4, city);
+            preparedStatement.setInt(5, this.employeeId);
 
-                    preparedStatement.executeUpdate();
-                } catch (SQLException e) {
-                    System.out.println(e);
-                    return;
-                }
-
-                updateClientInfo();
-            }
-
-            protected void deleteAccount () {
-                PreparedStatement deleteCards = null;
-                PreparedStatement deleteAccount = null;
-                PreparedStatement deleteClient = null;
-                try {
-                    deleteCards = connection.prepareStatement("DELETE FROM credit_card WHERE client_id = ?");
-                    deleteAccount = connection.prepareStatement("DELETE FROM accounts WHERE client_id = ?");
-                    deleteClient = connection.prepareStatement("DELETE FROM clients WHERE id = ?");
-
-                    deleteCards.setInt(1, this.employeeId);
-                    deleteAccount.setInt(1, this.employeeId);
-                    deleteClient.setInt(1, this.employeeId);
-
-                    deleteCards.executeUpdate();
-                    deleteAccount.executeUpdate();
-                    deleteClient.executeUpdate();
-
-                } catch (SQLException e) {
-                    System.out.println(e);
-                    return;
-                }
-
-                dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-            }
-
-            protected boolean makeTransaction ( boolean standard, double amount, String receiver, TransferForm form){
-                PreparedStatement insertTransaction = null;
-                PreparedStatement subtractExpressCost = null;
-                java.util.Date javaDate = new java.util.Date();
-                java.sql.Date mySQLDate = new java.sql.Date(javaDate.getTime());
-                int transactionTypeId;
-                try {
-                    insertTransaction = connection.prepareStatement("INSERT INTO transactions(amount, type_id, account_id, transaction_date) VALUES (?, ?, ?, ?)");
-                    insertTransaction.setDouble(1, amount);
-//                    insertTransaction.setInt(3, departmentId);
-
-                    if (standard) {
-                        transactionTypeId = 2;
-                        insertTransaction.setInt(2, transactionTypeId);
-
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(mySQLDate);
-                        calendar.add(Calendar.DAY_OF_MONTH, 1);
-
-                        insertTransaction.setDate(4, new java.sql.Date(calendar.getTimeInMillis()));
-                    } else {
-                        transactionTypeId = 8;
-                        insertTransaction.setInt(2, transactionTypeId);
-                        insertTransaction.setDate(4, mySQLDate);
-
-                        subtractExpressCost = connection.prepareStatement("UPDATE accounts SET balance = balance - 5 WHERE client_id = ?");
-                        subtractExpressCost.setInt(1, employeeId);
-
-                        subtractExpressCost.executeUpdate();
-                    }
-
-                    insertTransaction.executeUpdate();
-                } catch (Exception e) {
-                    System.out.println(e + " TTT");
-                    return false;
-                }
-
-                PreparedStatement transferMoneyToReceiver = null;
-                PreparedStatement getAccountID = null;
-                PreparedStatement insertIncoming = null;
-                try {
-//            getAccountID = connection.prepareStatement("SELECT clients_info_view.`ID konta` FROM clients_info_view WHERE `Numer konta` = ?");
-                    getAccountID.setString(1, receiver);
-                    ResultSet resultSet = getAccountID.executeQuery();
-                    resultSet.next();
-
-                    insertIncoming = connection.prepareStatement("INSERT INTO transactions (amount, type_id, account_id, transaction_date) VALUES (?, ?, ?, ?)");
-                    insertIncoming.setDouble(1, amount);
-                    insertIncoming.setInt(2, transactionTypeId - 1);
-                    insertIncoming.setInt(3, resultSet.getInt(1));
-                    insertIncoming.setDate(4, mySQLDate);
-                    insertIncoming.executeUpdate();
-                } catch (SQLException e) {
-                    JOptionPane.showMessageDialog(form, "Przelano do klienta innego banku");
-                }
-
-                updateClientInfo();
-                return true;
-            }
-
-
-            private void updateClientInfo () {
-                try {
-                    PreparedStatement preparedStatement = connection.prepareStatement("SELECT `Imię`, `Nazwisko`, `Adres`, `Miasto`, `Saldo` FROM clients_info_view WHERE ID = ?");
-                    preparedStatement.setInt(1, employeeId);
-                    ResultSet resultSet = preparedStatement.executeQuery();
-                    resultSet.next();
-
-                    firstName = resultSet.getString(1);
-                    lastName = resultSet.getString(2);
-                    address = resultSet.getString(3);
-                    position = resultSet.getString(4);
-                    balance = resultSet.getDouble(5);
-
-                    repaint();
-
-                } catch (SQLException e) {
-                    System.out.println(e);
-                    return;
-                }
-
-                nameFillLabel.setText(firstName + " " + lastName);
-                positionFillLabel.setText(String.valueOf(balance));
-            }
-
-            public String getFirstName () {
-                return firstName;
-            }
-
-            public String getLastName () {
-                return lastName;
-            }
-
-            public String getAddress () {
-                return address;
-            }
-
-            public String getPosition () {
-                return position;
-            }
-
-            public double getBalance () {
-                return balance;
-            }
-
-
-            // History of transactions
-            private class transactionsFrame extends JFrame implements ActionListener {
-                private final Client parent;
-                private final JButton quitButton;
-
-                private transactionsFrame(Client parent) {
-                    this.parent = parent;
-
-                    JPanel jPanel = new JPanel(new GridLayout(3, 1));
-                    jPanel.setBackground(new Color(24, 26, 48));
-
-                    Font font = new Font("Cooper Black", Font.BOLD | Font.ITALIC, 22);
-                    JLabel label = new JLabel();
-                    label.setFont(font);
-                    label.setForeground(new Color(255, 255, 255));
-                    label.setText("Bank Bilardzistów");
-                    label.setHorizontalAlignment(JLabel.CENTER);
-                    jPanel.add(label);
-
-                    setTitle("Historia transakcji");
-                    setContentPane(jPanel);
-
-                    quitButton = new JButton();
-                    quitButton.setText("Powrót");
-                    quitButton.addActionListener(this);
-
-                    ArrayList<Object[]> dataList = new ArrayList<>();
-
-                    try {
-                        PreparedStatement preparedStatement = Employee.this.connection.prepareStatement("SELECT `Rodzaj transakcji`, Data, Kwota FROM transactions_view WHERE `Numer konta` = ?");
-//                preparedStatement.setString(1, Employee.this.accountNumber);
-                        ResultSet set = preparedStatement.executeQuery();
-                        while (set.next()) {
-                            Object[] row = new Object[]{set.getString(1), set.getDate(2), set.getDouble(3)};
-                            dataList.add(row);
-                        }
-                        Object[][] data = new Object[dataList.size()][];
-                        dataList.toArray(data);
-                        String[] columns = {"Rodzaj transakcji", "Data", "Kwota"};
-                        DefaultTableModel tableModel = new DefaultTableModel(data, columns);
-
-                        JTable transactions = new JTable(tableModel);
-                        transactions.getColumnModel().getColumn(0).setMinWidth(220);
-                        JScrollPane scrollPane = new JScrollPane(transactions);
-                        jPanel.add(scrollPane);
-                    } catch (SQLException e) {
-                        JOptionPane.showMessageDialog(this, "Brak transakcji do pokazania");
-                    }
-
-                    jPanel.add(quitButton);
-
-                    addWindowListener(new java.awt.event.WindowAdapter() {
-                        @Override
-                        public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                            parent.setVisible(true);
-                        }
-                    });
-
-                    setSize(400, 300);
-                    setVisible(true);
-
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (e.getSource() == quitButton) {
-                        parent.setVisible(true);
-                        dispose();
-                    }
-                }
-            }
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+            return;
         }
+
+        updateClientInfo();
+    }
+
+    protected void deleteAccount() {
+        PreparedStatement deleteCards = null;
+        PreparedStatement deleteAccount = null;
+        PreparedStatement deleteClient = null;
+        try {
+            deleteCards = connection.prepareStatement("DELETE FROM credit_card WHERE client_id = ?");
+            deleteAccount = connection.prepareStatement("DELETE FROM accounts WHERE client_id = ?");
+            deleteClient = connection.prepareStatement("DELETE FROM clients WHERE id = ?");
+
+            deleteCards.setInt(1, this.employeeId);
+            deleteAccount.setInt(1, this.employeeId);
+            deleteClient.setInt(1, this.employeeId);
+
+            deleteCards.executeUpdate();
+            deleteAccount.executeUpdate();
+            deleteClient.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            return;
+        }
+
+        dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }
+
+
+
+
+    private void updateClientInfo() {
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT `Imię`, `Nazwisko`, `Adres`, `Miasto`, `Saldo` FROM clients_info_view WHERE ID = ?");
+            preparedStatement.setInt(1, employeeId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            firstName = resultSet.getString(1);
+            lastName = resultSet.getString(2);
+            address = resultSet.getString(3);
+            position = resultSet.getString(4);
+            balance = resultSet.getDouble(5);
+
+            repaint();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            return;
+        }
+
+        nameFillLabel.setText(firstName + " " + lastName);
+        positionFillLabel.setText(String.valueOf(balance));
+    }
+
+    protected String[] getLoans(){
+        String[] loans = null;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT ID, `Imie i nazwisko` FROM loan_info_view WHERE Zatwierdzono IS NULL");
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            ArrayList<String> loansList = new ArrayList<>();
+
+            while (resultSet.next()){
+                loansList.add(resultSet.getInt(1) + ", " + resultSet.getString(2));
+            }
+
+            loans = loansList.toArray(new String[0]);
+
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+
+        return loans;
+    }
+
+    protected String[] getLoanInfo(int id){
+        String[] loans = null;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT Kwota, `Imie i nazwisko`, `Adres zamieszkania`, `Saldo klienta`, `Obrót na koncie` FROM loan_info_view WHERE ID = ? AND Zatwierdzono IS NULL");
+            preparedStatement.setInt(1, id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            ArrayList<String> loansList = new ArrayList<>();
+
+            loansList.add(String.valueOf(resultSet.getInt(1)));
+            loansList.add(resultSet.getString(2));
+            loansList.add(resultSet.getString(3));
+            loansList.add(String.valueOf(resultSet.getDouble(4)));
+            loansList.add(String.valueOf(resultSet.getDouble(5)));
+
+            loans = loansList.toArray(new String[0]);
+
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+
+        return loans;
+    }
+
+    protected void reviewLoan(boolean approved, int id){
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE loans SET approved = ? WHERE id = ?");
+            preparedStatement.setBoolean(1, approved);
+            preparedStatement.setInt(2, id);
+
+            preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+}
 
 
 

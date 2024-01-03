@@ -42,7 +42,7 @@ public class Client extends JFrame implements ActionListener {
     public Client(int clientId, String firstName, String lastName, String address, String city, Double balance, String accountNumber, int accountId) {
         creditCards = new ArrayList<>();
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
+            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "root");
             PreparedStatement preparedStatement = Client.this.connection.prepareStatement("SELECT `Numer karty`, `Data ważności`, Producent FROM cards_view WHERE `Id klienta` = ?");
             preparedStatement.setInt(1, clientId);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -214,8 +214,6 @@ public class Client extends JFrame implements ActionListener {
         return true;
     }
 
-
-
     private void updateClientInfo(){
         try{
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT `Imię`, `Nazwisko`, `Adres`, `Miasto`, `Saldo` FROM clients_info_view WHERE ID = ?");
@@ -238,6 +236,39 @@ public class Client extends JFrame implements ActionListener {
 
         nameFillLabel.setText(firstName + " " + lastName);
         balanceFillLabel.setText(String.valueOf(balance));
+    }
+
+    protected void applyForLoan(double amount){
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM loan_info_view WHERE `ID klienta` = ? AND Zatwierdzono IS NULL");
+            preparedStatement.setInt(1, clientId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            int rows = 0;
+
+            while(resultSet.next())
+                rows++;
+
+            if(rows > 0){
+                JOptionPane.showMessageDialog(this, "Nie możesz mieć więcej niż jeden oczekujący wniosek o pożyczkę");
+                return;
+            }
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+            return;
+        }
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO loans(amount, client_id) VALUES(?, ?)");
+            preparedStatement.setDouble(1, amount);
+            preparedStatement.setInt(2, clientId);
+
+            preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this,"Poprawnie złożono wniosek");
     }
 
     public String getFirstName() {
