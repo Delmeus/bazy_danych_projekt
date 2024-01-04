@@ -128,6 +128,26 @@ public class CloseAcc extends JFrame implements ActionListener {
                 }
             });
 
+            noButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {frame.dispose(); // Close the current JFrame
+                }
+            });
+            yesButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    parent.deleteAcc(((String) comboBox1.getSelectedItem()).split(" ")[4]);
+
+;
+
+
+
+                    frame.dispose(); // Close the current JFrame
+                }
+            });
+
+
+
             frame.setContentPane(jPanel);
 
             frame.pack();
@@ -149,17 +169,7 @@ public class CloseAcc extends JFrame implements ActionListener {
         }
     }
 
-    private class NoButtonActionListener implements ActionListener {
-        private final JFrame parent;
 
-        private NoButtonActionListener(JFrame parent) {
-            this.parent = parent;
-        }
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            parent.dispose();
-        }
-    }
 
 }
 
