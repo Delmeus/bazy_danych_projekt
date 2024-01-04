@@ -142,7 +142,65 @@ public class Employee extends JFrame implements ActionListener {
         dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
 
+    protected boolean makeTransaction(boolean standard, double amount, String receiver, TransferForm form) {
+        PreparedStatement insertTransaction = null;
+        PreparedStatement subtractExpressCost = null;
+        java.util.Date javaDate = new java.util.Date();
+        java.sql.Date mySQLDate = new java.sql.Date(javaDate.getTime());
+        int transactionTypeId;
+        try {
+            insertTransaction = connection.prepareStatement("INSERT INTO transactions(amount, type_id, account_id, transaction_date) VALUES (?, ?, ?, ?)");
+            insertTransaction.setDouble(1, amount);
+//                    insertTransaction.setInt(3, departmentId);
 
+            if (standard) {
+                transactionTypeId = 2;
+                insertTransaction.setInt(2, transactionTypeId);
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(mySQLDate);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+                insertTransaction.setDate(4, new java.sql.Date(calendar.getTimeInMillis()));
+            } else {
+                transactionTypeId = 8;
+                insertTransaction.setInt(2, transactionTypeId);
+                insertTransaction.setDate(4, mySQLDate);
+
+                subtractExpressCost = connection.prepareStatement("UPDATE accounts SET balance = balance - 5 WHERE client_id = ?");
+                subtractExpressCost.setInt(1, employeeId);
+
+                subtractExpressCost.executeUpdate();
+            }
+
+            insertTransaction.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e + " TTT");
+            return false;
+        }
+
+        PreparedStatement transferMoneyToReceiver = null;
+        PreparedStatement getAccountID = null;
+        PreparedStatement insertIncoming = null;
+        try {
+//            getAccountID = connection.prepareStatement("SELECT clients_info_view.`ID konta` FROM clients_info_view WHERE `Numer konta` = ?");
+            getAccountID.setString(1, receiver);
+            ResultSet resultSet = getAccountID.executeQuery();
+            resultSet.next();
+
+            insertIncoming = connection.prepareStatement("INSERT INTO transactions (amount, type_id, account_id, transaction_date) VALUES (?, ?, ?, ?)");
+            insertIncoming.setDouble(1, amount);
+            insertIncoming.setInt(2, transactionTypeId - 1);
+            insertIncoming.setInt(3, resultSet.getInt(1));
+            insertIncoming.setDate(4, mySQLDate);
+            insertIncoming.executeUpdate();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(form, "Przelano do klienta innego banku");
+        }
+
+        updateClientInfo();
+        return true;
+    }
 
 
     private void updateClientInfo() {
@@ -229,6 +287,60 @@ public class Employee extends JFrame implements ActionListener {
         }
     }
 
+
+
+    public ArrayList<String> populateComboBox(String dane) {
+        try {
+
+
+            System.out.println(dane.split(" ")[1]);
+            String query = "SELECT client_id, account_number FROM accounts ";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Populate the comboBox1 with the fetched data
+            ArrayList<String> items = new ArrayList<>();
+            while (resultSet.next()) {
+                items.add("id: " + resultSet.getString("client_id") + ", nr konta: " + resultSet.getString("account_number"));
+            }
+            // Add items to comboBox1
+
+            // Close the resources
+            resultSet.close();
+            preparedStatement.close();
+            return items;
+
+
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+
+
+    }
+
+    public void deleteAcc(String dane) {
+        try {
+
+
+            System.out.println("w:"+dane);
+
+            String query = "DELETE FROM accounts WHERE  account_number=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, dane);
+            preparedStatement.executeUpdate();
+
+
+            preparedStatement.close();
+
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+
+
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -249,7 +361,78 @@ public class Employee extends JFrame implements ActionListener {
         return balance;
     }
 
+
+    // History of transactions
+    private class transactionsFrame extends JFrame implements ActionListener {
+        private final Client parent;
+        private final JButton quitButton;
+
+        private transactionsFrame(Client parent) {
+            this.parent = parent;
+
+            JPanel jPanel = new JPanel(new GridLayout(3, 1));
+            jPanel.setBackground(new Color(24, 26, 48));
+
+            Font font = new Font("Cooper Black", Font.BOLD | Font.ITALIC, 22);
+            JLabel label = new JLabel();
+            label.setFont(font);
+            label.setForeground(new Color(255, 255, 255));
+            label.setText("Bank Bilardzistów");
+            label.setHorizontalAlignment(JLabel.CENTER);
+            jPanel.add(label);
+
+            setTitle("Historia transakcji");
+            setContentPane(jPanel);
+
+            quitButton = new JButton();
+            quitButton.setText("Powrót");
+            quitButton.addActionListener(this);
+
+            ArrayList<Object[]> dataList = new ArrayList<>();
+
+            try {
+                PreparedStatement preparedStatement = Employee.this.connection.prepareStatement("SELECT `Rodzaj transakcji`, Data, Kwota FROM transactions_view WHERE `Numer konta` = ?");
+//                preparedStatement.setString(1, Employee.this.accountNumber);
+                ResultSet set = preparedStatement.executeQuery();
+                while (set.next()) {
+                    Object[] row = new Object[]{set.getString(1), set.getDate(2), set.getDouble(3)};
+                    dataList.add(row);
+                }
+                Object[][] data = new Object[dataList.size()][];
+                dataList.toArray(data);
+                String[] columns = {"Rodzaj transakcji", "Data", "Kwota"};
+                DefaultTableModel tableModel = new DefaultTableModel(data, columns);
+
+                JTable transactions = new JTable(tableModel);
+                transactions.getColumnModel().getColumn(0).setMinWidth(220);
+                JScrollPane scrollPane = new JScrollPane(transactions);
+                jPanel.add(scrollPane);
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Brak transakcji do pokazania");
+            }
+
+            jPanel.add(quitButton);
+
+            addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    parent.setVisible(true);
+                }
+            });
+
+            setSize(400, 300);
+            setVisible(true);
+
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (e.getSource() == quitButton) {
+                parent.setVisible(true);
+                dispose();
+            }
+        }
+
+    }
 }
-
-
 
