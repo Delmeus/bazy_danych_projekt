@@ -320,7 +320,38 @@ public class Employee extends JFrame implements ActionListener {
                     }
                 }
             }
+
+
+
+    public  ArrayList<String>   populateComboBox(String dane) {
+        try {
+
+
+            System.out.println(dane.split(" ")[1]);
+            String query = "SELECT client_id, account_number FROM accounts ";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Populate the comboBox1 with the fetched data
+            ArrayList<String> items = new ArrayList<>();
+            while (resultSet.next()) {
+                items.add("id: " + resultSet.getString("client_id") + ", nr konta: " + resultSet.getString("account_number"));
+
+            }
+
+            // Add items to comboBox1
+
+            // Close the resources
+            resultSet.close();
+            preparedStatement.close();
+            return items;
+
+
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
 
 
+    }
+}
 

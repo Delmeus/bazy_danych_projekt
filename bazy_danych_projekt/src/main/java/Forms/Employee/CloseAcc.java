@@ -1,12 +1,12 @@
 package Forms.Employee;
 
 
-import Forms.Client.Client;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class CloseAcc extends JFrame implements ActionListener {
     private JPanel mainPanel;
@@ -25,6 +25,8 @@ public class CloseAcc extends JFrame implements ActionListener {
     private JButton quitButton;
     private JLabel cityLabel;
     private JButton deleteButton;
+    private JComboBox comboBox1;
+    private JButton searchButton;
 
 
     private final Employee parent;
@@ -33,6 +35,7 @@ public class CloseAcc extends JFrame implements ActionListener {
 
         quitButton.addActionListener(this);
         deleteButton.addActionListener(this);
+        searchButton.addActionListener(this);
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -56,10 +59,52 @@ public class CloseAcc extends JFrame implements ActionListener {
 //            parent.updateCredentials(firstNameField.getText(), lastNameField.getText(), addressField.getText(), cityTextField.getText());
             dispose();
             parent.setVisible(true);
+
         }
         if(e.getSource() == quitButton){
             dispose();
             parent.setVisible(true);
+        }
+        if (e.getSource() == searchButton) {
+            String name = firstNameField.getText();
+            if(name.split(" ").length!=2)
+            {
+                JFrame frame = new JFrame();
+                JPanel jPanel = new JPanel();
+                jPanel.setBackground(new Color(24, 26, 48));
+                JLabel label = new JLabel("Błędne dane wejściowe, należyty format to 'Jan Kowalski' !");
+                label.setForeground(new Color(255, 255, 255));
+                JButton okButton = new JButton("Ok");
+
+                okButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        frame.dispose(); // Close the current JFrame
+                    }
+                });
+                jPanel.add(okButton);
+                jPanel.add(label);
+
+
+
+                addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                        parent.setVisible(true);
+                    }
+                });
+
+                frame.setContentPane(jPanel);
+
+                frame.pack();
+                frame.setVisible(true);
+            }
+            else {
+                ArrayList<String> items = parent.populateComboBox(name);
+                comboBox1.setModel(new DefaultComboBoxModel<>(items.toArray(new String[0])));
+            }
+
+
         }
         if(e.getSource() == deleteButton){
             JFrame frame = new JFrame();
