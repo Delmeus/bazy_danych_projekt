@@ -293,14 +293,18 @@ public class Employee extends JFrame implements ActionListener {
         try {
 
 
-            String query = "SELECT client_id, account_number FROM accounts ";
+            String query = "SELECT id, acc_nr, acc_id FROM close_acc_info_view WHERE first_name=? AND last_name=? ";
+
             PreparedStatement preparedStatement = connection.prepareStatement(query);
+            System.out.println( dane.split(" ")[0]);
+            preparedStatement.setString(1, dane.split(" ")[0]);
+            preparedStatement.setString(2, dane.split(" ")[1]);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             // Populate the comboBox1 with the fetched data
             ArrayList<String> items = new ArrayList<>();
             while (resultSet.next()) {
-                items.add("id: " + resultSet.getString("client_id") + ", nr konta: " + resultSet.getString("account_number"));
+                items.add("id: " + resultSet.getString("id") + ", nr konta: " + resultSet.getString("acc_nr")+ " , id konta: "+resultSet.getString("acc_id"));
             }
             // Add items to comboBox1
 
@@ -320,16 +324,20 @@ public class Employee extends JFrame implements ActionListener {
 
     public void deleteAcc(String dane) {
         try {
+            String queryFirst = "DELETE FROM transactions WHERE  account_id=?";
+            PreparedStatement preparedStatementFirst = connection.prepareStatement(queryFirst);
+            preparedStatementFirst.setString(1, ((String) dane.split(" ")[8]));
 
-
-
+            preparedStatementFirst.executeUpdate();
             String query = "DELETE FROM accounts WHERE  account_number=?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, dane);
+            preparedStatement.setString(1, ((String) dane.split(" ")[4]));
+
             preparedStatement.executeUpdate();
 
 
             preparedStatement.close();
+            preparedStatementFirst.close();
 
 
         } catch (SQLException ex) {
