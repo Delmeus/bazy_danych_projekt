@@ -293,7 +293,6 @@ public class Employee extends JFrame implements ActionListener {
         try {
 
 
-            System.out.println(dane.split(" ")[1]);
             String query = "SELECT client_id, account_number FROM accounts ";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -323,7 +322,6 @@ public class Employee extends JFrame implements ActionListener {
         try {
 
 
-            System.out.println("w:"+dane);
 
             String query = "DELETE FROM accounts WHERE  account_number=?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
