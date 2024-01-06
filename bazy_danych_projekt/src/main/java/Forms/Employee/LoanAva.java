@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class LoanAva extends JFrame implements ActionListener {
     private JLabel mainLabel;
@@ -60,7 +61,7 @@ public class LoanAva extends JFrame implements ActionListener {
             dispose();
             parent.setVisible(true);
         }
-        if(e.getSource() == performButton){
+        if(e.getSource() == performButton && comboBox1.getItemCount()!=0){
             String[] parts = comboBox1.getItemAt(comboBox1.getSelectedIndex()).split(",");
             parent.reviewLoan(true, Integer.parseInt(parts[0]));
 
@@ -73,7 +74,7 @@ public class LoanAva extends JFrame implements ActionListener {
 
             repaint();
         }
-        if(e.getSource() == declineButton){
+        if(e.getSource() == declineButton && comboBox1.getItemCount()!=0 ){
             String[] parts = comboBox1.getItemAt(comboBox1.getSelectedIndex()).split(",");
             parent.reviewLoan(false, Integer.parseInt(parts[0]));
 
@@ -86,18 +87,22 @@ public class LoanAva extends JFrame implements ActionListener {
 
             repaint();
         }
-        if(e.getSource() == comboBox1){
-            String[] parts = comboBox1.getItemAt(comboBox1.getSelectedIndex()).split(",");
+        if(e.getSource() == comboBox1) {
+            try {
+                String[] parts = comboBox1.getItemAt(comboBox1.getSelectedIndex()).split(",");
 
-            String[] info = parent.getLoanInfo(Integer.parseInt(parts[0]));
+                String[] info = parent.getLoanInfo(Integer.parseInt(parts[0]));
 
-            amountFillLabel.setText(info[0]);
-            nameFillLabel.setText(info[1]);
-            addressFillLabel.setText(info[2]);
-            balanceFillLabel.setText(info[3]);
-            trafficFillLabel.setText(info[4]);
+                amountFillLabel.setText(info[0]);
+                nameFillLabel.setText(info[1]);
+                addressFillLabel.setText(info[2]);
+                balanceFillLabel.setText(info[3]);
+                trafficFillLabel.setText(info[4]);
 
-            repaint();
+                repaint();
+            }
+            catch (Exception s) {
+            }
         }
     }
 }

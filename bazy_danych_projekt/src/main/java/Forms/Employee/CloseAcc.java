@@ -136,7 +136,7 @@ public class CloseAcc extends JFrame implements ActionListener {
             yesButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    parent.deleteAcc(((String) comboBox1.getSelectedItem()).split(" ")[4]);
+                    parent.deleteAcc(((String) comboBox1.getSelectedItem()));
 
 ;
 
