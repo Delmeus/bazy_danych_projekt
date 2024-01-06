@@ -292,6 +292,21 @@ public class Client extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(this, "Pomyślnie dodano kartę");
     }
 
+    public void deleteCard(int cardIndex){
+        CreditCard card = creditCards.get(cardIndex);
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM credit_card WHERE card_number = ?");
+            preparedStatement.setString(1, card.cardNumber());
+
+            preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+            return;
+        }
+        creditCards.remove(cardIndex);
+        JOptionPane.showMessageDialog(this, "Pomyślnie usunięto kartę");
+    }
+
     public String getFirstName() {
         return firstName;
     }

@@ -1,8 +1,6 @@
 package Forms.Client;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -14,6 +12,7 @@ public class CreditCardsForm extends JFrame implements ActionListener {
     private JButton orderCardButton;
     private JButton quitButton;
     private JList<String> list1;
+    private JButton deleteButton;
 
     private final Client parent;
 
@@ -32,6 +31,7 @@ public class CreditCardsForm extends JFrame implements ActionListener {
 
         orderCardButton.addActionListener(this);
         quitButton.addActionListener(this);
+        deleteButton.addActionListener(this);
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -57,6 +57,18 @@ public class CreditCardsForm extends JFrame implements ActionListener {
                 return;
             }
             new OrderCreditCardForm(parent, this);
+        }
+        else if(e.getSource() == deleteButton){
+            parent.deleteCard(list1.getSelectedIndex());
+            ArrayList<String> dataList = new ArrayList<>();
+            for(CreditCard card : parent.getCreditCards()){
+                dataList.add(card.toString());
+            }
+            String[] data = new String[dataList.size()];
+            dataList.toArray(data);
+
+            list1.setListData(data);
+            repaint();
         }
     }
 
