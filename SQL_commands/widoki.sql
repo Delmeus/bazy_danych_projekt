@@ -5,16 +5,16 @@ SELECT
     clients.id AS "id",
     clients.first_name AS "first_name",
     clients.last_name AS "last_name",
-    accounts.account_number AS "acc_nr"
-    
+    accounts.account_number AS "acc_nr",
+    accounts.id AS "acc_id"
 FROM
 	clients
 JOIN
-	accounts ON clients.id = acaccount_numbercounts.client_id
+	accounts ON clients.id = accounts.client_id
 GROUP BY
 	clients.id;
 
-
+SELECT * FROM close_acc_info_view;
 
 
 
