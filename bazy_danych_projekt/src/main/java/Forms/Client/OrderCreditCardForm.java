@@ -4,12 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class OrderCreditCardForm extends JFrame implements ActionListener {
     private JPanel mainPanel;
     private JLabel titleLabel;
     private JLabel cardsLabel;
-    private JComboBox cardsComboBox;
+    private JComboBox<String> cardsComboBox;
     private JButton performButton;
     private JButton quitButton;
 
@@ -20,6 +21,12 @@ public class OrderCreditCardForm extends JFrame implements ActionListener {
 
         performButton.addActionListener(this);
         quitButton.addActionListener(this);
+
+        ArrayList<CreditCard> availableCards = parent.getAvailableCards();
+
+        for(CreditCard card : availableCards){
+            cardsComboBox.addItem(card.toString());
+        }
 
         setContentPane(mainPanel);
         setVisible(true);

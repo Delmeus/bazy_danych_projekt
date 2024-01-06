@@ -296,7 +296,6 @@ public class Employee extends JFrame implements ActionListener {
             String query = "SELECT id, acc_nr, acc_id FROM close_acc_info_view WHERE first_name=? AND last_name=? ";
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            System.out.println( dane.split(" ")[0]);
             preparedStatement.setString(1, dane.split(" ")[0]);
             preparedStatement.setString(2, dane.split(" ")[1]);
             ResultSet resultSet = preparedStatement.executeQuery();

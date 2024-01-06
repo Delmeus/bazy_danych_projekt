@@ -271,6 +271,10 @@ public class Client extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(this,"Poprawnie złożono wniosek");
     }
 
+    public ArrayList<CreditCard> getAvailableCards(){
+        return CreditCard.generateCards(connection);
+    }
+
     public String getFirstName() {
         return firstName;
     }
