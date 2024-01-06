@@ -56,7 +56,11 @@ public class CreditCardsForm extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Nie można posiadać więcej niż 3 karty kredytowe");
                 return;
             }
-            new OrderCreditCardForm(parent);
+            new OrderCreditCardForm(parent, this);
         }
+    }
+
+    public JList<String> getList1() {
+        return list1;
     }
 }

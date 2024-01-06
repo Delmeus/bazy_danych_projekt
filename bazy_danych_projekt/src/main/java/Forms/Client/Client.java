@@ -275,6 +275,23 @@ public class Client extends JFrame implements ActionListener {
         return CreditCard.generateCards(connection);
     }
 
+    public void addCardToAccount(CreditCard card){
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO credit_card(card_number, expiry_date, client_id, producent_name) VALUES (?, ?, ?, ?)");
+            preparedStatement.setString(1, card.cardNumber());
+            preparedStatement.setDate(2, card.expiryDate());
+            preparedStatement.setInt(3, this.clientId);
+            preparedStatement.setString(4, card.producerName());
+
+            preparedStatement.executeUpdate();
+        }catch (SQLException e){
+            JOptionPane.showMessageDialog(this, e.getMessage());
+            return;
+        }
+        creditCards.add(card);
+        JOptionPane.showMessageDialog(this, "Pomyślnie dodano kartę");
+    }
+
     public String getFirstName() {
         return firstName;
     }
