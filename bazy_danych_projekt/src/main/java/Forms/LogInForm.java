@@ -25,12 +25,12 @@ public class LogInForm extends JFrame implements ActionListener {
         userType = "";
 
         try{
-            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "okon");
+            connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/projekt_banku", "root", "root");
         }catch (Exception e){
             System.out.println(e);
         }
 
-        setTitle("Aplikacja Klienta");
+        setTitle("Logowanie");
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -54,10 +54,13 @@ public class LogInForm extends JFrame implements ActionListener {
             else if(String.valueOf(passwordField.getPassword()).equalsIgnoreCase("KLIENT")){
                 try{
                     Statement statement = connection.createStatement();
-                    ResultSet set = statement.executeQuery("SELECT * FROM client_credentials_view");
+                    ResultSet set = statement.executeQuery("SELECT * FROM clients_info_view");
                     while(set.next()){
-                        if(set.getString(1).equalsIgnoreCase(loginField.getText())){
+                        if((set.getString(2) + " " + set.getString(3)).equalsIgnoreCase(loginField.getText())){
                             userType = "CLIENT";
+                            new Client(set.getInt(1), set.getString(2), set.getString(3),
+                                    set.getString(4), set.getString(5), set.getDouble(6),
+                                    set.getString(7), set.getInt(8));
                             break;
                         }
                     }

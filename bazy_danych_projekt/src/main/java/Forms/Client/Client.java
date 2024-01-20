@@ -191,7 +191,6 @@ public class Client extends JFrame implements ActionListener {
             return false;
         }
 
-        PreparedStatement transferMoneyToReceiver = null;
         PreparedStatement getAccountID = null;
         PreparedStatement insertIncoming = null;
         try {
@@ -226,9 +225,6 @@ public class Client extends JFrame implements ActionListener {
             address = resultSet.getString(3);
             city = resultSet.getString(4);
             balance = resultSet.getDouble(5);
-
-            repaint();
-
         }catch (SQLException e){
             System.out.println(e);
             return;
@@ -236,6 +232,7 @@ public class Client extends JFrame implements ActionListener {
 
         nameFillLabel.setText(firstName + " " + lastName);
         balanceFillLabel.setText(String.valueOf(balance));
+        repaint();
     }
 
     protected void applyForLoan(double amount){
