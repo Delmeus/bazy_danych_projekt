@@ -1,6 +1,7 @@
 package Forms;
 
 import Forms.Client.Client;
+import Forms.Employee.Employee;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,11 +46,24 @@ public class LogInForm extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
-            if(loginField.getText().equalsIgnoreCase("ADMIN") && String.valueOf(passwordField.getPassword()).equalsIgnoreCase("ADMIN")){
-                userType = "ADMIN";
-            }
-            else if(loginField.getText().equalsIgnoreCase("PRACOWNIK") && String.valueOf(passwordField.getPassword()).equalsIgnoreCase("PRACOWNIK")){
-                userType = "EMPLOYEE";
+//            if(loginField.getText().equalsIgnoreCase("ADMIN") && String.valueOf(passwordField.getPassword()).equalsIgnoreCase("ADMIN")){
+//                userType = "ADMIN";
+//            }
+            if(String.valueOf(passwordField.getPassword()).equalsIgnoreCase("PRACOWNIK")){
+                try{
+                    Statement statement = connection.createStatement();
+                    ResultSet set = statement.executeQuery("SELECT * FROM employees_info_view");
+                    while(set.next()){
+                        if((set.getString(2) + " " + set.getString(3)).equalsIgnoreCase(loginField.getText())){
+                            userType = "EMPLOYEE";
+                            new Employee(set.getInt(1), set.getString(2), set.getString(3),
+                                    set.getString(4), set.getString(5), set.getString(6));
+                            break;
+                        }
+                    }
+                }catch (SQLException exception){
+                    System.out.println(exception);
+                }
             }
             else if(String.valueOf(passwordField.getPassword()).equalsIgnoreCase("KLIENT")){
                 try{
